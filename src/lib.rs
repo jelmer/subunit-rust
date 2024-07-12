@@ -257,7 +257,7 @@ fn read_packet(cursor: &mut Cursor<Vec<u8>>) -> GenResult<Event> {
     let timestamp = if masks.contains("timestamp") {
         let seconds = cursor.read_u32::<BigEndian>()?;
         let nanos = read_number(cursor)?;
-        Some(Utc.timestamp(i64::from(seconds), nanos))
+        Some(Utc.timestamp_opt(i64::from(seconds), nanos).unwrap())
     } else {
         None
     };
@@ -498,7 +498,7 @@ mod tests {
         let mut event = Event {
             status: Some("inprogress".to_string()),
             test_id: Some("A_test_id".to_string()),
-            timestamp: Some(Utc.ymd(2014, 7, 8).and_hms(9, 10, 11)),
+            timestamp: Some(Utc.with_ymd_and_hms(2014, 7, 8, 9, 10, 11).unwrap()),
             tags: Some(vec!["tag_a".to_string(), "tag_b".to_string()]),
             file_content: None,
             file_name: None,
@@ -530,7 +530,7 @@ mod tests {
         let mut event = Event {
             status: Some("inprogress".to_string()),
             test_id: Some("A_test_id".to_string()),
-            timestamp: Some(Utc.ymd(2014, 7, 8).and_hms(9, 10, 11)),
+            timestamp: Some(Utc.with_ymd_and_hms(2014, 7, 8, 9, 10, 11).unwrap()),
             tags: Some(vec!["tag_a".to_string(), "tag_b".to_string()]),
             file_content: Some("stdout content".to_string().into_bytes()),
             file_name: Some("stdout:''".to_string()),
@@ -540,7 +540,7 @@ mod tests {
         let mut event_a = Event {
             status: Some("fail".to_string()),
             test_id: Some("A_test_id".to_string()),
-            timestamp: Some(Utc.ymd(2014, 7, 8).and_hms(9, 12, 1)),
+            timestamp: Some(Utc.with_ymd_and_hms(2014, 7, 8, 9, 12, 1).unwrap()),
             tags: Some(vec!["tag_a".to_string(), "tag_b".to_string()]),
             file_content: None,
             file_name: None,
