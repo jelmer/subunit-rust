@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/jelmer/subunit-rust"
 keywords = ["subunit"]
 categories = ["development-tools::testing"]
+edition = "2018"
 
 [badges]
 travis-ci = {repository = "jelmer/subunit-rust"}
