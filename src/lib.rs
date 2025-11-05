@@ -11,7 +11,10 @@
 // limitations under the License.
 
 #![deny(missing_docs)]
+#![doc = include_str!("../README.md")]
 
+//! # API Documentation
+//!
 //! Implementation of the Subunit protocol in Rust. For the protocol definition,
 //! see the [Subunit Protocol
 //! Specification](https://github.com/testing-cabal/subunit/blob/main/README.rst).
