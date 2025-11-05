@@ -31,43 +31,43 @@ Event struct in the events vector for each subunit packet in the file.
 ## Writing subunit packets
 
 Writing a subunit packet first requires creating an event structure to describe
-the contents of the packet. For example:
+the contents of the packet. The Event API uses a builder pattern for
+construction. For example:
 
 ```rust
-    let mut event_start = Event {
-        status: Some("inprogress".to_string()),
-        test_id: Some("A_test_id".to_string()),
-        timestamp: Some(Utc.with_ymd_and_hms(2014, 7, 8, 9, 10, 11).unwrap()),
-        tags: Some(vec!["tag_a".to_string(), "tag_b".to_string()]),
-        file_content: None,
-        file_name: None,
-        mime_type: None,
-        route_code: None
-    };
+    use subunit::types::{event::Event, teststatus::TestStatus};
+    use chrono::{TimeZone, Utc};
+
+    let event_start = Event::new(TestStatus::InProgress)
+        .test_id("A_test_id")
+        .datetime(Utc.with_ymd_and_hms(2014, 7, 8, 9, 10, 11).unwrap())?
+        .tag("tag_a")
+        .tag("tag_b")
+        .build();
 ```
 
 A typical test event normally involves 2 packets though, one to mark the start
 and the other to mark the finish of a test:
 ```rust
-    let mut event_end = Event {
-        status: Some("success".to_string()),
-        test_id: Some("A_test_id".to_string()),
-        timestamp: Some(Utc.with_ymd_and_hms(2014, 7, 8, 9, 12, 0).unwrap()),
-        tags: Some(vec!["tag_a".to_string(), "tag_b".to_string()]),
-        file_content: Some("stdout content".to_string().into_bytes()),
-        file_name: Some("stdout:''".to_string()),
-        mime_type: Some("text/plain;charset=utf8".to_string()),
-        route_code: None
-    };
+    let event_end = Event::new(TestStatus::Success)
+        .test_id("A_test_id")
+        .datetime(Utc.with_ymd_and_hms(2014, 7, 8, 9, 12, 0).unwrap())?
+        .tag("tag_a")
+        .tag("tag_b")
+        .mime_type("text/plain;charset=utf8")
+        .file_content("stdout:''", b"stdout content")
+        .build();
 ```
 Then you'll want to write the packet out to something. Anything that implements
 the std::io::Write trait can be used for the packets, including things like a
 File and a TCPStream. In this case we'll use Vec<u8> to keep it in memory:
 ```rust
+    use subunit::serialize::Serializable;
+
     let mut subunit_stream: Vec<u8> = Vec::new();
 
-    subunit_stream = event_start.write(subunit_stream)?;
-    subunit_stream = event_end.write(subunit_stream)?;
+    event_start.serialize(&mut subunit_stream)?;
+    event_end.serialize(&mut subunit_stream)?;
 ```
 With this the subunit_stream buffer will contain the contents of the subunit
 stream for that test event.
