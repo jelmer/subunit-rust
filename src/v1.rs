@@ -1208,7 +1208,7 @@ mod tests {
                 &end_keywords.join(&[][..])[..],
             ];
 
-            let events = dbg!(parse_stream(&stream.join(&[][..])[..]).await);
+            let events = parse_stream(&stream.join(&[][..])[..]).await;
             assert_eq!(&end_events[..], &events[2..]);
         }
     }
@@ -1223,7 +1223,7 @@ mod tests {
             b"failure old mcdonald\n", // legitimate test end
         ];
 
-        let events = dbg!(parse_stream(&stream.join(&[][..])[..]).await);
+        let events = parse_stream(&stream.join(&[][..])[..]).await;
 
         let mut expected_events = vec![
             Event::TestStart("old mcdonald".into()),
@@ -1244,7 +1244,7 @@ mod tests {
             b"failure old mcdonald\n", // legitimate test end
         ];
 
-        let events = dbg!(parse_stream(&stream.join(&[][..])[..]).await);
+        let events = parse_stream(&stream.join(&[][..])[..]).await;
 
         let mut expected_events = vec![
             Event::TestStart("old mcdonald".into()),
@@ -1274,7 +1274,7 @@ mod tests {
             &b"]\n"[..],                      // legitimate end of details
         ];
 
-        let events = dbg!(parse_stream(&stream.join(&[][..])[..]).await);
+        let events = parse_stream(&stream.join(&[][..])[..]).await;
 
         let expected_events = vec![
             Event::TestStart("old mcdonald".into()),
