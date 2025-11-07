@@ -36,8 +36,8 @@ for item in iter_stream(cursor) {
         ScannedItem::Event(event) => {
             println!("Got event: {:?}", event.test_id);
         }
-        ScannedItem::UTF8chars(text) => {
-            println!("Got text: {:?}", text);
+        ScannedItem::Bytes(bytes) => {
+            println!("Got non-event data: {} bytes", bytes.len());
         }
         ScannedItem::Unknown(data, err) => {
             eprintln!("Unknown item: {:?}", err);
